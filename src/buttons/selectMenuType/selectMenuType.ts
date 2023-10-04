@@ -6,10 +6,11 @@ import {
   MessageActionRowComponentBuilder,
 } from "discord.js";
 import { Button } from "../../models";
+import { SelectMenuButton } from "../../models/interaction";
 
-const button: Button = {
+const button: SelectMenuButton = {
   name: "selectMenuType",
-  execute: async (interaction: any, client, guildDb) => {
+  execute: async (interaction, client, guildDb) => {
     const newType = interaction.values[0];
     const dailyMsgs = new EmbedBuilder()
       .setTitle(
@@ -51,7 +52,7 @@ const button: Button = {
       .setColor("#0598F6");
 
     const dailyButtons =
-        new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+        new ActionRowBuilder<ButtonBuilder>().addComponents(
           new ButtonBuilder()
             .setCustomId("dailyMsg")
             .setLabel(
@@ -83,7 +84,7 @@ const button: Button = {
             .setStyle(ButtonStyle.Primary)
             .setEmoji("📝"),
         ),
-      dailyButtons2 = new ActionRowBuilder().addComponents(
+      dailyButtons2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("dailyTimezone")
           .setLabel(
@@ -117,7 +118,7 @@ const button: Button = {
           .setEmoji("⏰"),
       );
 
-    await client.database.updateGuild(interaction.guild.id, {
+    await client.database.updateGuild(interaction.guild!.id, {
       customTypes: newType,
     });
 
@@ -125,7 +126,6 @@ const button: Button = {
       content: null,
       embeds: [dailyMsgs],
       components: [dailyButtons, dailyButtons2],
-      ephemeral: true,
     });
     return;
   },

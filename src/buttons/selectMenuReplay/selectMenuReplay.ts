@@ -4,9 +4,11 @@ import {
   EmbedBuilder,
   MessageActionRowComponentBuilder,
   ButtonStyle,
+  SelectMenuInteraction,
 } from "discord.js";
 import Sentry from "@sentry/node";
 import { Button } from "../../models";
+import { SelectMenuButton } from "../../models/interaction";
 
 const modalObject = {
   title: "Replay Cooldown",
@@ -29,12 +31,12 @@ const modalObject = {
 function isNumericRegex(str: string) {
   return /^[0-9]+$/.test(str); // regex for extra 0,00000002% speeds :trol:
 }
-const button: Button = {
+const button: SelectMenuButton = {
   name: "selectMenuReplay",
   execute: async (interaction, client, guildDb) => {
     if (
       guildDb.replayChannels.find(
-        (c: any) => c.id === (interaction as any).values[0],
+        (c) => c.id === interaction.values[0],
       )
     ) {
       interaction.reply({

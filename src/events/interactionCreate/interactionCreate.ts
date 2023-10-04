@@ -1,4 +1,4 @@
-import { ButtonInteraction, CacheType, Interaction } from "discord.js";
+import { ButtonInteraction, CacheType, ChatInputCommandInteraction, Interaction } from "discord.js";
 import { Event } from "../../models/event";
 import { IGuildModel } from "../../util/Models/guildModel";
 import { UserModel } from "../../util/Models/userModel";
@@ -37,7 +37,7 @@ const event: Event = {
         const command = client.commands.get(interaction.commandName);
         if (!command) return;
 
-        if (command?.requireGuild){
+        if (command?.requireGuild) {
           interaction.reply({
             content:
               "This command is only usable on a Discord Server!\nYou want to test Would You? Join the support server!\nhttps://discord.gg/vMyXAxEznS",
@@ -63,15 +63,15 @@ const event: Event = {
         interaction.guild.id,
         true,
       );
-      if(!guildDb) return;
+      if (!guildDb) return;
       // const { inter } = require(`../languages/${guildDb.language || "en_EN"}.json`);
       if (interaction.isChatInputCommand()) {
-        const statsMap = {
+        const statsMap: { [key: string]: string } = {
           wouldyourather: "wouldyou.used.command",
           neverhaveiever: "neverhaveiever.used.command",
           higherlower: "higherlower.used.command",
           wwyd: "whatwouldyoudo.used.command",
-        } as any;
+        };
 
         if (!user) {
           await UserModel.create({
@@ -137,12 +137,12 @@ const event: Event = {
           }
         }
 
-        const replyMap = {
+        const replyMap: { [key: string]: string } = {
           wouldyourather: "wouldyou.used.replay",
           neverhaveiever: "neverhaveiever.used.replay",
           higherlower: "higherlower.used.replay",
           wwyd: "whatwouldyoudo.used.replay",
-        } as any;
+        };
 
         if (!user) {
           await UserModel.create({
@@ -151,7 +151,7 @@ const event: Event = {
           });
         } else {
           // Get the field path based on the command name
-          const fieldPath = replyMap[(interaction as any).commandName];
+          const fieldPath = replyMap[interaction.customId];
 
           if (fieldPath) {
             // Increment the specified field using $inc
@@ -171,14 +171,14 @@ const event: Event = {
           button = client.buttons.get("higher");
         if (interaction.customId.startsWith("lower_"))
           button = client.buttons.get("lower");
-        if (!button){
+        if (!button) {
           interaction
             .reply({
               content: "Please use the command again.",
               ephemeral: true,
             })
-            .catch(() => {});
-            return;
+            .catch(() => { });
+          return;
         }
 
         if (
@@ -187,7 +187,7 @@ const event: Event = {
           interaction.customId.startsWith("result_") ||
           interaction.customId.startsWith("higher_") ||
           interaction.customId.startsWith("lower_")
-        ){
+        ) {
           await button.execute(interaction, client, guildDb);
           return;
         }
@@ -202,8 +202,8 @@ const event: Event = {
                 client.used.get(interaction.user.id) / 1000,
               )}:R>!`,
             })
-            .catch(() => {});
-            return 
+            .catch(() => { });
+          return
         } else if (
           guildDb.replayType === "Channels" &&
           client.used.has(`${interaction.user.id}-${interaction.channel?.id}`) &&
@@ -216,12 +216,12 @@ const event: Event = {
             .reply({
               ephemeral: true,
               content: `<t:${Math.floor(cooldown /
-                  1000 +
-                  Date.now() / 1000,
+                1000 +
+                Date.now() / 1000,
               )}:R> you can use buttons again!`,
             })
-            .catch(() => {});
-            return;
+            .catch(() => { });
+          return;
         }
 
         try {
@@ -238,9 +238,9 @@ const event: Event = {
               client.used.set(
                 `${interaction.user.id}-${interaction.channel?.id}`,
                 Date.now() +
-                  (Number(guildDb.replayChannels.find(
-                    (x: any) => x.id === interaction.channel?.id,
-                  )?.cooldown) || 0),
+                (Number(guildDb.replayChannels.find(
+                  (x: any) => x.id === interaction.channel?.id,
+                )?.cooldown) || 0),
               );
               setTimeout(
                 () =>

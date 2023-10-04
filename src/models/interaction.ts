@@ -1,4 +1,4 @@
-import { ButtonInteraction, Interaction as dInteraction } from "discord.js";
+import { AnySelectMenuInteraction, ButtonInteraction, SelectMenuInteraction, Interaction as dInteraction } from "discord.js";
 import WouldYou from "../util/wouldYou";
 import { IGuildModel } from "../util/Models/guildModel";
 
@@ -16,5 +16,13 @@ export interface Button extends Interaction {
     interaction: ButtonInteraction,
     client: WouldYou,
     guildDb: IGuildModel,
+  ): Promise<void>;
+}
+
+export interface SelectMenuButton extends Interaction {
+  execute(
+    interaction: SelectMenuInteraction,
+    client: WouldYou,
+    guildDb: IGuildModel
   ): Promise<void>;
 }

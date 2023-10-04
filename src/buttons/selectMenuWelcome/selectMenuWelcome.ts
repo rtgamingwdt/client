@@ -4,11 +4,11 @@ import {
   EmbedBuilder,
   ButtonStyle,
 } from "discord.js";
-import { Button } from "../../models";
+import { SelectMenuButton } from "../../models/interaction";
 
-const button: Button = {
+const button: SelectMenuButton = {
   name: "seletcMenuWelcome",
-  execute: async (interaction: any, client, guildDb) => {
+  execute: async (interaction, client, guildDb) => {
     const newChannel = interaction.values[0];
 
     const welcomes = new EmbedBuilder()
@@ -51,7 +51,7 @@ const button: Button = {
         iconURL: client.user?.avatarURL() || undefined,
       });
 
-    const welcomeButtons = new ActionRowBuilder().addComponents(
+    const welcomeButtons = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("welcome")
           .setLabel(
@@ -73,7 +73,7 @@ const button: Button = {
           )
           .setStyle(ButtonStyle.Success),
       ),
-      welcomeButtons2 = new ActionRowBuilder().addComponents(
+      welcomeButtons2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId("welcomePing")
           .setLabel(
@@ -107,7 +107,7 @@ const button: Button = {
           .setEmoji("▶"),
       );
 
-    await client.database.updateGuild(interaction.guild.id, {
+    await client.database.updateGuild(interaction.guild!.id, {
       welcomeChannel: newChannel,
     });
 
@@ -115,7 +115,6 @@ const button: Button = {
       content: null,
       embeds: [welcomes],
       components: [welcomeButtons, welcomeButtons2],
-      ephemeral: true,
     });
     return;
   },
